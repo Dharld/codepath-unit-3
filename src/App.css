@@ -249,3 +249,17 @@ button.shuffle-button img {
     }
   }
 }
+
+.streak {
+  position: fixed;
+  top: 0;
+  left: 2rem;
+  line-height: 0.5;
+
+  .value {
+    color: greenyellow;
+    font-family: bebas neue;
+    font-style: italic;
+    font-size: 2rem;
+  }
+}

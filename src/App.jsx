@@ -95,6 +95,8 @@ function App() {
   const [currentCard, setCurrentCard] = useState(cards[activeIndex]);
   const [flip, setFlip] = useState(false);
   const [guess, setGuess] = useState("");
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [longestStreak, setLongestStreak] = useState(0);
 
   useEffect(() => {
     setCurrentCard(cards[activeIndex]);
@@ -133,31 +135,17 @@ function App() {
 
   const checkAnswer = (e) => {
     e.preventDefault();
-    // Fuse is used to match answers that are kinda
-    /* const words = currentCard.answer
-      .split(" ")
-      .map((item) => ({ title: item.trim().toLowerCase() }));
-
-    // Initialize the fuse
-    const fuse = new Fuse(words, {
-      keys: ["title"],
-      treshold: 1,
-    });
-
-    // Look for the
-    console.log(currentCard.question);
-    console.log(currentCard.answer); */
-
-    console.log(guess);
-    console.log(currentCard.answer);
 
     const res = fuzzySearch(guess, currentCard.answer);
 
-    console.log(res);
-
     if (res) {
+      setCurrentStreak(currentStreak + 1);
       successToast("Correct!");
     } else {
+      setLongestStreak(
+        currentStreak > longestStreak ? currentStreak : longestStreak
+      );
+      setCurrentStreak(0);
       errorToast("Invalid answer");
     }
   };
@@ -165,6 +153,14 @@ function App() {
 
   return (
     <div className="container">
+      <div className="streak">
+        <h4>
+          Streak: <span className="value"> {currentStreak}</span>
+        </h4>
+        <h4>
+          Longest Streak: <span className="value"> {longestStreak}</span>
+        </h4>
+      </div>
       <div className="header">
         <h3 className="title">Learn JS</h3>
         <div className="description">
