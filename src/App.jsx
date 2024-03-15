@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import randomIcon from "../src/assets/random.png";
 import "./App.css";
-import { ToasterProvider, useToast } from "./toast.context";
+import { useToast } from "./toast.context";
 
-const cards = [
+const CARDS = [
   {
     question:
       "What is JavaScript and what is its primary use in web development?",
@@ -73,22 +73,28 @@ const cards = [
 ];
 
 function shuffleArray(array) {
+  let copy = array.slice();
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]; // Swap elements at i and j indices
+    [copy[i], copy[j]] = [copy[j], copy[i]]; // Swap elements at i and j indices
   }
-  return array;
+  return copy;
 }
 
 function App() {
-  const { successToast, errorToast } = useToast();
+  const { successToast } = useToast();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [cards, setCards] = useState(CARDS);
   const [currentCard, setCurrentCard] = useState(cards[activeIndex]);
   const [flip, setFlip] = useState(false);
 
   useEffect(() => {
     setCurrentCard(cards[activeIndex]);
-  }, [activeIndex]);
+  }, [activeIndex, cards]);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [cards]);
 
   const flipCard = () => {
     setFlip(!flip);
@@ -107,48 +113,47 @@ function App() {
 
   const shuffleCards = () => {
     setFlip(false);
-    shuffleArray(cards);
-    setActiveIndex(0);
+    let newCards = shuffleArray(cards);
+    setCards(newCards);
+    successToast("Cards shuffled");
   };
 
   const { question, answer, difficulty, image } = currentCard;
 
   return (
-    <ToasterProvider>
-      <div className="container">
-        <div className="header">
-          <h3 className="title">Learn JS</h3>
-          <div className="description">
-            <p>
-              LearnJS is a comprehensive and interactive platform designed to
-              help users learn JavaScript programming language effectively.{" "}
-            </p>
-          </div>
-          <div className="number-card">Number of cards</div>
-          <div className="card-container">{cards.length}</div>
+    <div className="container">
+      <div className="header">
+        <h3 className="title">Learn JS</h3>
+        <div className="description">
+          <p>
+            LearnJS is a comprehensive and interactive platform designed to help
+            users learn JavaScript programming language effectively.{" "}
+          </p>
         </div>
-
-        <div className="cards">
-          <div className={`card ${flip ? "flipped" : ""}`} onClick={flipCard}>
-            <div className={`content ${difficulty}`}>
-              <div className="front">
-                {image && <img src={image} alt />}
-                <div>{question}</div>
-              </div>
-              <div className={`back ${difficulty}`}>{answer}</div>
-            </div>
-          </div>
-          <button className="arrow arrow-next" onClick={shuffleCards}>
-            <img src={randomIcon} alt="" />
-          </button>
-        </div>
-        <ul className="difficulties">
-          <li className="easy">Easy</li>
-          <li className="medium">Medium</li>
-          <li className="hard">Hard</li>
-        </ul>
+        <div className="number-card">Number of cards</div>
+        <div className="card-container">{cards.length}</div>
       </div>
-    </ToasterProvider>
+
+      <div className="cards">
+        <div className={`card ${flip ? "flipped" : ""}`} onClick={flipCard}>
+          <div className={`content ${difficulty}`}>
+            <div className="front">
+              {image && <img src={image} />}
+              <div>{question}</div>
+            </div>
+            <div className={`back ${difficulty}`}>{answer}</div>
+          </div>
+        </div>
+        <button onClick={shuffleCards}>
+          <img src={randomIcon} alt="" />
+        </button>
+      </div>
+      <ul className="difficulties">
+        <li className="easy">Easy</li>
+        <li className="medium">Medium</li>
+        <li className="hard">Hard</li>
+      </ul>
+    </div>
   );
 }
 
