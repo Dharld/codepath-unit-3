@@ -213,3 +213,39 @@ button.shuffle-button img {
     background-color: rgb(91, 150, 2);
   }
 }
+
+.cards {
+  position: relative;
+}
+
+.arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 48px;
+  height: 48px;
+  border: 2px solid greenyellow;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+
+  &:active {
+    scale: 1.125;
+  }
+
+  &.arrow-left {
+    left: -10px;
+  }
+
+  &.arrow-right {
+    right: -10px;
+  }
+  &:hover {
+    background: greenyellow;
+
+    svg {
+      fill: white;
+    }
+  }
+}

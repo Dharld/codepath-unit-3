@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import randomIcon from "../src/assets/random.png";
 import "./App.css";
 import { useToast } from "./toast.context";
@@ -66,6 +66,28 @@ function shuffleArray(array) {
   return copy;
 }
 
+function fuzzySearch(query, text) {
+  // Convert both query and text to lowercase for case-insensitive matching
+  const queryLower = query.toLowerCase();
+  const textLower = text.toLowerCase();
+
+  // Split the query into words
+  const queryWords = queryLower.split(" ");
+
+  // Check if each word in the query appears in the text
+  for (const word of queryWords) {
+    // Create a regular expression to match the word with any number of characters before or after
+    const regex = new RegExp(`\\b${word}\\b`, "gi"); // Using word boundaries (\b) for exact word match
+
+    // Check if the word exists in the text
+    if (!regex.test(textLower)) {
+      return false; // If any word is not found, return false
+    }
+  }
+
+  return true; // If all words are found, return true
+}
+
 function App() {
   const { successToast, errorToast } = useToast();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -112,20 +134,28 @@ function App() {
   const checkAnswer = (e) => {
     e.preventDefault();
     // Fuse is used to match answers that are kinda
-    const words = currentCard.answer
+    /* const words = currentCard.answer
       .split(" ")
       .map((item) => ({ title: item.trim().toLowerCase() }));
 
     // Initialize the fuse
     const fuse = new Fuse(words, {
       keys: ["title"],
-      treshold: 0.25,
+      treshold: 1,
     });
 
     // Look for the
-    const res = fuse.search(guess);
+    console.log(currentCard.question);
+    console.log(currentCard.answer); */
 
-    if (res.length > 0) {
+    console.log(guess);
+    console.log(currentCard.answer);
+
+    const res = fuzzySearch(guess, currentCard.answer);
+
+    console.log(res);
+
+    if (res) {
       successToast("Correct!");
     } else {
       errorToast("Invalid answer");
@@ -153,6 +183,30 @@ function App() {
       </div>
 
       <div className="cards">
+        <div className="arrow arrow-left" onClick={choosePrevCard}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            id="Outline"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            fill="greenyellow"
+          >
+            <path d="M.88,14.09,4.75,18a1,1,0,0,0,1.42,0h0a1,1,0,0,0,0-1.42L2.61,13H23a1,1,0,0,0,1-1h0a1,1,0,0,0-1-1H2.55L6.17,7.38A1,1,0,0,0,6.17,6h0A1,1,0,0,0,4.75,6L.88,9.85A3,3,0,0,0,.88,14.09Z" />
+          </svg>
+        </div>
+        <div className="arrow arrow-right" onClick={chooseNextCard}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            id="Outline"
+            viewBox="0 0 24 24"
+            width="24"
+            height="24"
+            fill="greenyellow"
+          >
+            <path d="M23.12,9.91,19.25,6a1,1,0,0,0-1.42,0h0a1,1,0,0,0,0,1.41L21.39,11H1a1,1,0,0,0-1,1H0a1,1,0,0,0,1,1H21.45l-3.62,3.61a1,1,0,0,0,0,1.42h0a1,1,0,0,0,1.42,0l3.87-3.88A3,3,0,0,0,23.12,9.91Z" />
+          </svg>
+        </div>
         <div className={`card ${flip ? "flipped" : ""}`} onClick={flipCard}>
           <div className={`content ${difficulty}`}>
             <div className="front">
