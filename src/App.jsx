@@ -2,76 +2,60 @@ import { useEffect, useState } from "react";
 import randomIcon from "../src/assets/random.png";
 import "./App.css";
 import { useToast } from "./toast.context";
+import Input from "./components/input/input.component.jsx";
 
 const CARDS = [
   {
-    question:
-      "What is JavaScript and what is its primary use in web development?",
-    answer:
-      "JavaScript is a programming language used primarily for adding interactivity and dynamic behavior to web pages. It is commonly used to create interactive features like form validation, animations, and handling user interactions.",
     difficulty: "easy",
+    question: "JavaScript's data type for whole numbers?",
+    answer: "Number type",
   },
   {
-    question: "Identify the output of the following JavaScript code snippet:",
-    image: "../src/assets/snippet.webp",
-    answer: `6--33--33--6--3--30
-      `,
-    difficulty: "medium",
-  },
-  {
-    question: "Describe the difference between == and === in JavaScript.",
-    answer:
-      "The == operator compares values after converting them to a common type, whereas the === operator compares both values and types. The === operator is stricter and typically recommended for comparing values in JavaScript.",
-    difficulty: "medium",
-  },
-  {
-    question: "What are JavaScript data types? Provide examples for each.",
-    answer:
-      "JavaScript has several data types, including string, number, boolean, null, undefined, object, and symbol. Examples: string ('hello'), number (42), boolean (true), null (null), undefined (undefined), object ({ key: 'value' }), symbol (Symbol('foo')).",
-    difficulty: "medium",
-  },
-  {
-    question:
-      "Explain the concept of closures in JavaScript. Provide an example.",
-    answer:
-      "Closures are functions that have access to the variables from their containing scope even after the scope has closed. They are created whenever a function is defined within another function. Example: function outerFunction() { const outerVariable = 'I am outer'; return function innerFunction() { console.log(outerVariable); }; } const innerFunc = outerFunction(); innerFunc(); // Output: 'I am outer'",
-    difficulty: "hard",
-  },
-  {
-    question:
-      "What is the purpose of the 'use strict' directive in JavaScript?",
-    answer:
-      "The 'use strict' directive enables strict mode in JavaScript, which makes it easier to write secure and optimized code. It catches common coding mistakes and prohibits certain unsafe actions. It is recommended to use strict mode in all JavaScript code.",
-    difficulty: "hard",
-  },
-  {
-    question: "Explain the concept of hoisting in JavaScript.",
-    answer:
-      "Hoisting is a JavaScript mechanism where variables and function declarations are moved to the top of their containing scope during the compilation phase. This means that variables and functions can be used before they are declared. However, only the declarations are hoisted, not the initializations. Example: console.log(myVar); // Output: undefined var myVar = 'hello';",
-    difficulty: "hard",
-  },
-  {
-    question:
-      "What are the differences between 'null' and 'undefined' in JavaScript?",
-    answer:
-      "In JavaScript, 'null' represents the intentional absence of any value, while 'undefined' represents the absence of a value that has not been assigned. 'null' is a primitive value, while 'undefined' is a type and also a value.",
     difficulty: "easy",
+    question: "Keyword for block scope variables?",
+    answer: "let keyword",
   },
   {
-    question:
-      "Explain the event bubbling and event capturing mechanisms in JavaScript.",
-    answer:
-      "Event bubbling and event capturing are two event propagation mechanisms in JavaScript. Event bubbling means that events propagate from the innermost element to the outermost element, while event capturing means that events propagate from the outermost element to the innermost element. By default, most modern browsers use event bubbling.",
-    difficulty: "medium",
-  },
-  {
-    question: "What are arrow functions in JavaScript? Provide an example.",
-    answer:
-      "Arrow functions are a shorthand syntax for writing function expressions in JavaScript. They provide a more concise syntax and lexically bind the 'this' keyword. Example: const add = (a, b) => a + b; console.log(add(3, 5)); // Output: 8",
     difficulty: "easy",
+    question: "How to comment a single line?",
+    answer: "Using double slashes",
+  },
+  {
+    difficulty: "easy",
+    question: "Result of 5 + 3?",
+    answer: "8",
+  },
+  {
+    difficulty: "easy",
+    question: "Logical AND operator in JavaScript?",
+    answer: "&& operator",
+  },
+  {
+    difficulty: "easy",
+    question: "Check if variable is undefined?",
+    answer: "Using typeof operator",
+  },
+  {
+    difficulty: "easy",
+    question: "What does NaN stand for?",
+    answer: "Not a Number",
+  },
+  {
+    difficulty: "medium",
+    question: "What does JSON stand for?",
+    answer: "JavaScript Object Notation",
+  },
+  {
+    difficulty: "medium",
+    question: "Method to convert string to lowercase?",
+    answer: "toLowerCase() method",
+  },
+  {
+    difficulty: "medium",
+    question: "Ternary operator syntax?",
+    answer: "condition ? trueValue : falseValue",
   },
 ];
-
 function shuffleArray(array) {
   let copy = array.slice();
   for (let i = array.length - 1; i > 0; i--) {
@@ -82,11 +66,12 @@ function shuffleArray(array) {
 }
 
 function App() {
-  const { successToast } = useToast();
+  const { successToast, errorToast } = useToast();
   const [activeIndex, setActiveIndex] = useState(0);
   const [cards, setCards] = useState(CARDS);
   const [currentCard, setCurrentCard] = useState(cards[activeIndex]);
   const [flip, setFlip] = useState(false);
+  const [guess, setGuess] = useState("");
 
   useEffect(() => {
     setCurrentCard(cards[activeIndex]);
@@ -98,6 +83,11 @@ function App() {
 
   const flipCard = () => {
     setFlip(!flip);
+  };
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setGuess(value);
   };
 
   const chooseNextCard = () => {
@@ -118,6 +108,15 @@ function App() {
     successToast("Cards shuffled");
   };
 
+  const checkAnswer = (e) => {
+    console.log("Checking answer");
+    e.preventDefault();
+    if (guess.toLowerCase() === currentCard.answer.toLowerCase()) {
+      successToast("Correct!");
+    } else {
+      errorToast("Invalid answer");
+    }
+  };
   const { question, answer, difficulty, image } = currentCard;
 
   return (
@@ -132,6 +131,11 @@ function App() {
         </div>
         <div className="number-card">Number of cards</div>
         <div className="card-container">{cards.length}</div>
+        <ul className="difficulties">
+          <li className="easy">Easy</li>
+          <li className="medium">Medium</li>
+          <li className="hard">Hard</li>
+        </ul>
       </div>
 
       <div className="cards">
@@ -144,15 +148,22 @@ function App() {
             <div className={`back ${difficulty}`}>{answer}</div>
           </div>
         </div>
-        <button onClick={shuffleCards}>
+      </div>
+      <form className="wrapper" onSubmit={checkAnswer}>
+        <Input
+          label="Enter your guess"
+          value={guess}
+          handleChange={handleChange}
+        />
+        <button className="submit-button" type="submit">
+          Submit Guess
+        </button>
+      </form>
+      <div className="button-wrapper">
+        <button className="shuffle-button" onClick={shuffleCards}>
           <img src={randomIcon} alt="" />
         </button>
       </div>
-      <ul className="difficulties">
-        <li className="easy">Easy</li>
-        <li className="medium">Medium</li>
-        <li className="hard">Hard</li>
-      </ul>
     </div>
   );
 }
