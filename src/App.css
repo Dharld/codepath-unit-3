@@ -191,7 +191,8 @@ button.shuffle-button img {
   display: flex;
   align-items: end;
   gap: 0.5rem;
-  max-width: 450px;
+  max-width: 720px;
+  width: 80%;
   margin-top: 0.25rem;
   margin-inline: auto;
 }

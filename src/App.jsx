@@ -3,6 +3,7 @@ import randomIcon from "../src/assets/random.png";
 import "./App.css";
 import { useToast } from "./toast.context";
 import Input from "./components/input/input.component.jsx";
+import Fuse from "fuse.js";
 
 const CARDS = [
   {
@@ -109,9 +110,22 @@ function App() {
   };
 
   const checkAnswer = (e) => {
-    console.log("Checking answer");
     e.preventDefault();
-    if (guess.toLowerCase() === currentCard.answer.toLowerCase()) {
+    // Fuse is used to match answers that are kinda
+    const words = currentCard.answer
+      .split(" ")
+      .map((item) => ({ title: item.trim().toLowerCase() }));
+
+    // Initialize the fuse
+    const fuse = new Fuse(words, {
+      keys: ["title"],
+      treshold: 0.25,
+    });
+
+    // Look for the
+    const res = fuse.search(guess);
+
+    if (res.length > 0) {
       successToast("Correct!");
     } else {
       errorToast("Invalid answer");
