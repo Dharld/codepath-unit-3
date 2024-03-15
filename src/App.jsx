@@ -116,12 +116,14 @@ function App() {
   };
 
   const chooseNextCard = () => {
+    setGuess("");
     setFlip(false);
     const lastIndex = cards.length - 1;
     setActiveIndex(activeIndex < lastIndex ? activeIndex + 1 : lastIndex);
   };
 
   const choosePrevCard = () => {
+    setGuess("");
     setFlip(false);
     setActiveIndex(activeIndex > 0 ? activeIndex - 1 : 0);
   };
